@@ -46,6 +46,7 @@ void setup(){
   iy = (height - sideLength)/2; // initial y
   
   gameState = GAME_START;
+  setBombs();
 }
 
 void draw(){
@@ -85,9 +86,61 @@ void draw(){
 
 int countNeighborBombs(int col,int row){
   // -------------- Requirement B ---------
-  return 0;
-}
-
+  int count=0; 
+ // 1 
+ // col-1, row-1 
+  if (col-1 > -1 && row-1 > -1) {
+      if (slot[col-1][row-1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  } 
+ // col, row-1 
+  if (col > -1 && row-1 > -1) {
+      if (slot[col][row-1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  } 
+ // col+1, row-1 
+  if (col+1 < 4 && row-1 > -1) {
+      if (slot[col+1][row-1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  }
+// 2  
+ // col-1, row 
+  if (col-1 > -1 && row > -1) {
+      if (slot[col-1][row] == SLOT_BOMB) {
+          count ++ ;
+      }
+  } 
+ // col+1, row 
+  if (col+1 < 4 && row > -1) {
+      if (slot[col+1][row] == SLOT_BOMB) {
+          count ++ ;
+      }
+  }
+// 3  
+ // col-1, row+1 
+  if (col-1 > -1 && row+1 < 4) {
+      if (slot[col-1][row+1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  } 
+ // col, row+1 
+  if (col > -1 && row+1 < 4) {
+      if (slot[col][row+1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  } 
+ // col+1, row+1 
+  if (col+1 < 4 && row+1 < 4) {
+      if (slot[col+1][row+1] == SLOT_BOMB) {
+          count ++ ;
+      }
+  }    
+    return count;  
+  }
+  
 void setBombs(){
   // initial slot
   for (int col=0; col < nSlot; col++){
@@ -96,11 +149,20 @@ void setBombs(){
     }
   }
   // -------------- put your code here ---------
-  // randomly set bombs
-
-  // ---------------------------------------
+  // randomly set bombs 
+  int n=0;
+  int k=0;    
+  while(n < bombCount)  {
+      k=(int)random(16);
+      int col = k/4;
+      int row = k%4; 
+      if (slot[col][row] != SLOT_BOMB) { 
+          slot[col][row] = SLOT_BOMB;    
+          n=n+1;
+      }
+  } 
 }
-
+// ---------------------------------------
 void drawEmptySlots(){
   background(180);
   image(bg,0,0,640,480);
@@ -163,23 +225,58 @@ void mouseClicked(){
        clickCount = 0;
        flagCount = 0;
        setBombs();
-       drawEmptySlots();
+       drawEmptySlots(); // 
        gameState = GAME_RUN;
   }
 }
 
 void mousePressed(){
-  if ( gameState == GAME_RUN &&
+ if ( gameState == GAME_RUN &&
        mouseX >= ix && mouseX <= ix+sideLength && 
        mouseY >= iy && mouseY <= iy+sideLength){
     
-    // --------------- put you code here -------     
-
-    // -------------------------
-    
-  }
+    // --------------- put you code here -------
+   int col = (mouseX-ix)/SLOT_SIZE;
+   int row = (mouseY-iy)/SLOT_SIZE;
+   if (mouseButton == LEFT){
+  
+      if  (slot[col][row] == SLOT_BOMB) { 
+          showSlot(col,row,SLOT_DEAD);
+          gameState = GAME_LOSE;        
+          }
+     else
+         if (slot[col][row] == SLOT_FLAG)
+         {
+         }
+         else
+         {
+           clickCount++;  
+           slot[col][row]=SLOT_SAFE;   
+            showSlot(col,row,SLOT_SAFE);    
+         }
+     if (clickCount == 16-bombCount){
+        gameState = GAME_WIN;
+        }
+     else {}
+   }       
+   else if(mouseButton == RIGHT) {
+          if  (flagCount < bombCount
+              && slot[col][row]!= SLOT_SAFE){
+ //                slot[col][row]= SLOT_FLAG;  
+                 showSlot(col,row,SLOT_FLAG);
+                 flagCount++;
+              }
+          else 
+             if  (slot[col][row]==SLOT_FLAG){
+                  slot[col][row]= SLOT_OFF;  
+                  showSlot(col,row,SLOT_OFF);
+                  flagCount--;  
+              }        
+        }
+   }
 }
 
+// -------------------------    
 // press enter to start
 void keyPressed(){
   if(key==ENTER && (gameState == GAME_WIN || 
