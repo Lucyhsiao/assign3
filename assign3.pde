@@ -154,8 +154,8 @@ void setBombs(){
   int k=0;    
   while(n < bombCount)  {
       k=(int)random(16);
-      int col = k/4;
-      int row = k%4; 
+      int col =int(k/4);
+      int row =int(k%4); 
       if (slot[col][row] != SLOT_BOMB) { 
           slot[col][row] = SLOT_BOMB;    
           n=n+1;
@@ -236,8 +236,8 @@ void mousePressed(){
        mouseY >= iy && mouseY <= iy+sideLength){
     
     // --------------- put you code here -------
-   int col = (mouseX-ix)/SLOT_SIZE;
-   int row = (mouseY-iy)/SLOT_SIZE;
+   int col = int((mouseX-ix)/SLOT_SIZE);
+   int row = int((mouseY-iy)/SLOT_SIZE);
    if (mouseButton == LEFT){
   
       if  (slot[col][row] == SLOT_BOMB) { 
